@@ -5,11 +5,66 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma" //je l'ai commentee pour eviter l'erreur ENOENT: no such file or directory, copyfile '/Users/apple/JobTrack/backend/node_modules/@prisma/client/runtime/library.d.ts' -> '/Users/apple/JobTrack/backend/generated/prisma/runtime/library.d.ts'
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+//les tables de notre base de donnees
+
+//la table utilisateur
+model User {
+  id            Int             @id @default(autoincrement())
+  email         String          @unique
+  password      String
+  nom           String
+  prenom        String
+  statut        String          // 'etudiant', 'chomeur'
+  createdAt     DateTime        @default(now())
+  candidatures  Candidature[]
+
+}
+
+//la table Entreprise
+model Entreprise {
+  id            Int             @id @default(autoincrement())
+  nom           String    
+  secteur       String?
+  siteWeb       String?
+  notes         String?
+  candidatures  Candidature[]
+}
+
+//la table Candidature
+model Candidature {
+  id            Int             @id @default(autoincrement())
+  userId        Int
+  entrepriseId  Int
+  poste         String
+  type          String           //'stage', 'alternance', 'cdd', 'cdi'
+  statut        String           @default("envoye")      //'envoye', 'entretien', 'refus', 'accepte'
+  dateEnvoi     DateTime
+  dateRelance   DateTime?
+  cvUrl         String?
+  lettreUrl     String?
+  notes         String?
+  createdAt     DateTime          @default(now())
+  user          User              @relation(fields: [userId], references: [id])
+  entreprise    Entreprise        @relation(fields: [entrepriseId], references: [id])
+  interactions  Interaction[]
+}
+
+model Interaction {
+  id            Int               @id @default(autoincrement())
+  candidatureId Int 
+  type          String            // 'email', 'appel', 'entretien'
+  date          DateTime
+  description   String?
+  candidature   Candidature       @relation(fields: [candidatureId], references: [id])
+  createdAt     DateTime          @default(now())
+}
+
