@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { candidaturesAPI } from '../lib/api';
-import { showToast } from '../utils/toast';
+import { toast } from 'react-toastify';
 
 interface Stats {
   totalCandidatures: number;
@@ -21,9 +21,13 @@ export default function StatsGateway() {
     try {
       setLoading(true);
       const data = await candidaturesAPI.getStats();
-      setStats(data);
+      setStats({
+        totalCandidatures: data.total || 0,
+        byStatut: data.byStatut || {},
+        byType: data.byType || {},
+      });
     } catch (error) {
-      showToast.error('Erreur lors du chargement des statistiques');
+      toast.error('Erreur lors du chargement des statistiques');
     } finally {
       setLoading(false);
     }

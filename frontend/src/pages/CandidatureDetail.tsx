@@ -14,7 +14,9 @@ import {
   ExternalLink,
   Briefcase,
   Clock,
+  Tag as TagIcon,
 } from 'lucide-react';
+import { tagsStorage } from '../utils/tagsStorage';
 
 export default function CandidatureDetail() {
   const { id } = useParams();
@@ -23,6 +25,7 @@ export default function CandidatureDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showInteractionForm, setShowInteractionForm] = useState(false);
+  const [tags, setTags] = useState<any[]>([]);
 
   const [interactionForm, setInteractionForm] = useState({
     type: 'email',
@@ -38,6 +41,8 @@ export default function CandidatureDetail() {
     try {
       const data = await candidaturesAPI.getOne(parseInt(id!));
       setCandidature(data);
+      const savedTags = tagsStorage.getTagsForCandidature(parseInt(id!));
+      setTags(savedTags);
     } catch (error) {
       console.error('Erreur chargement candidature:', error);
     } finally {
@@ -308,6 +313,40 @@ export default function CandidatureDetail() {
                       <p className="text-gray-800 whitespace-pre-wrap mt-1">
                         {candidature.notes}
                       </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tags */}
+              {tags.length > 0 && (
+                <div className="mt-6 pt-4 border-t">
+                  <div className="flex items-start gap-4">
+                    <TagIcon className="w-6 h-6 text-purple-500 mt-0.5 flex-shrink-0" />
+                    <div className="w-full">
+                      <p className="text-sm font-medium text-gray-500 mb-3">Tags</p>
+                      <div className="flex flex-wrap gap-2">
+                        {tags.map((tag) => {
+                          const colorClasses: Record<string, string> = {
+                            blue: 'bg-blue-100 text-blue-800',
+                            red: 'bg-red-100 text-red-800',
+                            green: 'bg-green-100 text-green-800',
+                            yellow: 'bg-yellow-100 text-yellow-800',
+                            purple: 'bg-purple-100 text-purple-800',
+                            pink: 'bg-pink-100 text-pink-800',
+                          };
+                          return (
+                            <span
+                              key={tag.id}
+                              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                colorClasses[tag.color] || colorClasses.blue
+                              }`}
+                            >
+                              {tag.label}
+                            </span>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>

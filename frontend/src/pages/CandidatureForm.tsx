@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { candidaturesAPI, Candidature } from '../lib/api';
+import { candidaturesAPI, Candidature, Tag } from '../lib/api';
 import { showToast } from '../utils/toast';
 import { ArrowLeft, Save } from 'lucide-react';
+import TagsInput from '../components/TagsInput';
+import { tagsStorage } from '../utils/tagsStorage';
 
 export default function CandidatureForm() {
   const { id } = useParams();
@@ -20,6 +22,7 @@ export default function CandidatureForm() {
     notes: '',
   });
 
+  const [tags, setTags] = useState<Tag[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -42,6 +45,9 @@ export default function CandidatureForm() {
         dateEnvoi: data.dateEnvoi.split('T')[0],
         notes: data.notes || '',
       });
+      if (data.tags) {
+        setTags(data.tags);
+      }
     } catch (error) {
       showToast.error('Erreur lors du chargement de la candidature');
     }
@@ -69,9 +75,13 @@ export default function CandidatureForm() {
           statut: formData.statut,
           notes: formData.notes,
         });
+        tagsStorage.saveTagsForCandidature(parseInt(id!), tags);
         showToast.success('Candidature mise à jour avec succès');
       } else {
-        await candidaturesAPI.create(formData);
+        const response = await candidaturesAPI.create(formData);
+        if (response.id) {
+          tagsStorage.saveTagsForCandidature(response.id, tags);
+        }
         showToast.success('Candidature créée avec succès');
       }
       navigate('/dashboard');
@@ -262,6 +272,13 @@ export default function CandidatureForm() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Ajoutez des notes sur cette candidature..."
                   />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tags / Catégories
+                  </label>
+                  <TagsInput tags={tags} onTagsChange={setTags} placeholder="Ajouter un tag (Appuyez sur Entrée)..." />
                 </div>
               </div>
             </div>

@@ -1,7 +1,9 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from './contexts/AuthContext';
+import { useState, useEffect } from 'react';
+import { candidaturesAPI, Candidature } from './lib/api';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -14,6 +16,26 @@ import Colors from './pages/Colors';
 
 function App() {
   const { user, isLoading } = useAuth();
+  const [candidatures, setCandidatures] = useState<Candidature[]>([]);
+  const location = useLocation();
+
+  // Charger les candidatures pour les notifications
+  useEffect(() => {
+    if (user && location.pathname !== '/login' && location.pathname !== '/register') {
+      loadCandidatures();
+      const interval = setInterval(loadCandidatures, 600000); // Recharger toutes les 10 minutes
+      return () => clearInterval(interval);
+    }
+  }, [user, location.pathname]);
+
+  const loadCandidatures = async () => {
+    try {
+      const data = await candidaturesAPI.getAll();
+      setCandidatures(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Erreur lors du chargement des candidatures pour les notifications');
+    }
+  };
 
   // Ne pas afficher Navbar pendant le chargement initial
   if (isLoading) {
@@ -26,7 +48,7 @@ function App() {
 
   return (
     <>
-      {user && <Navbar />}
+      {user && <Navbar candidatures={candidatures} />}
       <ToastContainer />
       <Routes>
         <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />

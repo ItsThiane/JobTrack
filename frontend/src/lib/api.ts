@@ -8,9 +8,24 @@ export const api = axios.create({
 
 // Ajouter un intercepteur pour inclure le token d'authentification dans les requêtes
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const rawToken = localStorage.getItem("token");
+  const token = rawToken ? rawToken.trim() : null;
   if (token) {
     config.headers!["Authorization"] = `Bearer ${token}`;
+  }
+  // Debug: log the final request URL and method to help diagnose malformed requests
+  try {
+    const base = (config.baseURL as string) || "";
+    const url = config.url || "";
+    // Avoid logging Authorization header value
+    const safeConfig = { ...config, headers: { ...(config.headers || {}) } } as any;
+    if (safeConfig.headers && safeConfig.headers.Authorization) {
+      safeConfig.headers = { ...safeConfig.headers, Authorization: "[REDACTED]" };
+    }
+    // eslint-disable-next-line no-console
+    console.debug("[API Request]", config.method?.toUpperCase(), base + url, safeConfig);
+  } catch (e) {
+    // ignore logging errors
   }
   return config;
 });     
@@ -52,6 +67,12 @@ export interface Entreprise {
 }
 
 //Types des données de Candidature
+export interface Tag {
+  id: string;
+  label: string;
+  color: 'blue' | 'red' | 'green' | 'yellow' | 'purple' | 'pink';
+}
+
 export interface Candidature {
   id: number;
   poste: string;
@@ -62,6 +83,7 @@ export interface Candidature {
   cvUrl?: string;
   lettreUrl?: string;
   notes?: string;
+  tags?: Tag[];
   entreprise: Entreprise;
   interactions: Interaction[];
 }
@@ -101,8 +123,16 @@ export const authAPI = {
 // Api Candidatures
 export const candidaturesAPI = {
     getAll: async (filters?: { statut?: string; type?: string }) => {
-        const response = await api.get<Candidature[]>("/candidatures", { params: filters });
-        return response.data;
+      const response = await api.get<any>("/candidatures", { params: filters });
+      // Backend may return either an array of candidatures or a paginated object { candidatures, total, page, limit }
+      if (Array.isArray(response.data)) {
+        return response.data as Candidature[];
+      }
+      if (response.data && Array.isArray(response.data.candidatures)) {
+        return response.data.candidatures as Candidature[];
+      }
+      // Fallback: return empty array to avoid runtime errors
+      return [] as Candidature[];
     },
 
     getOne: async (id: number) => {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { Candidature, Interaction } from '../lib/api';
+import { Candidature } from '../lib/api';
 import { AlertCircle, Clock } from 'lucide-react';
 import { differenceInDays, format, isSameDay } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -96,7 +96,11 @@ export default function CalendarView({ candidatures }: { candidatures: Candidatu
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Calendrier des Événements</h2>
         <div className="flex justify-center">
           <Calendar
-            onChange={setSelectedDate}
+            onChange={(value: unknown) => {
+              if (value instanceof Date) {
+                setSelectedDate(value);
+              }
+            }}
             value={selectedDate}
             tileContent={tileContent}
             locale="fr-FR"

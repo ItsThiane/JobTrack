@@ -2,8 +2,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { showToast } from '../utils/toast';
 import { LogOut, Settings, Home, FileText } from 'lucide-react';
+import NotificationCenter from './NotificationCenter';
+import ThemeToggle from './ThemeToggle';
+import { Candidature } from '../lib/api';
 
-export default function Navbar() {
+export default function Navbar({ candidatures = [] }: { candidatures?: Candidature[] }) {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,6 +52,8 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-4 border-l border-indigo-400 pl-4">
+              <NotificationCenter candidatures={candidatures} />
+              <ThemeToggle />
               <div className="text-sm">
                 <p className="font-semibold">{user.prenom} {user.nom}</p>
                 <p className="text-indigo-200 text-xs">{user.statut}</p>

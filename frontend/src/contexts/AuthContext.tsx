@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => { 
         //Recuperer le token de l'utilisateur depuis le localStorage au demarrage
-        const savedToken = localStorage.getItem("token");
+      const savedToken = localStorage.getItem("token")?.trim() || null;
         const savedUser = localStorage.getItem("user");    
 
         if (savedToken && savedUser) {
@@ -37,9 +37,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
   const login = async (email: string, password: string) => { 
     const response = await authAPI.login({email, password});
-    setToken(response.token);
+    const cleanToken = response.token?.trim();
+    setToken(cleanToken);
     setUser(response.user);
-    localStorage.setItem("token", response.token);
+    if (cleanToken) localStorage.setItem("token", cleanToken);
     localStorage.setItem("user", JSON.stringify(response.user));
   };
 
@@ -51,9 +52,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     statut: string 
 }) => {
     const response = await authAPI.register(data);
-    setToken(response.token);
+    const cleanToken = response.token?.trim();
+    setToken(cleanToken);
     setUser(response.user);
-    localStorage.setItem("token", response.token);
+    if (cleanToken) localStorage.setItem("token", cleanToken);
     localStorage.setItem("user", JSON.stringify(response.user));
   };
 

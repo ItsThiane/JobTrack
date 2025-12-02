@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import {
   User2, Mail, Building2, Star, Phone, Calendar, MapPin, Clock, FileText
