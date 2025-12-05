@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { candidaturesAPI, Candidature, Tag } from '../lib/api';
 import { showToast } from '../utils/toast';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Upload, FileTex, X } from 'lucide-react';
 import TagsInput from '../components/TagsInput';
 import { tagsStorage } from '../utils/tagsStorage';
 
@@ -20,14 +20,23 @@ export default function CandidatureForm() {
     statut: 'envoye',
     dateEnvoi: new Date().toISOString().split('T')[0],
     notes: '',
+    cvUrl: '',
+    lettreUrl: '',
   });
+
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [lettreFile, setLettreFile] = useState<File | null>(null);
+  const [uploadingCv, setUploadingCv] = useState(false);
+  const [uploadingLettre, setUploadingLettre] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
+
 
   const [tags, setTags] = useState<Tag[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (isEdit) {
+    if (isEdit && id) {
       loadCandidature();
     }
   }, [id]);
@@ -44,6 +53,8 @@ export default function CandidatureForm() {
         statut: data.statut,
         dateEnvoi: data.dateEnvoi.split('T')[0],
         notes: data.notes || '',
+        cvUrl: data.cvUrl || '',
+        lettreUrl: data.lettreUrl || '',
       });
       if (data.tags) {
         setTags(data.tags);
@@ -61,6 +72,70 @@ export default function CandidatureForm() {
       [e.target.name]: e.target.value,
     });
   };
+
+  const handleFileUpload = async (file: File, type: 'cv' | 'lettre') => {
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+    formDataUpload.append('type', type);
+
+    try {
+      if (type === 'cv') {
+        setUploadingCv(true);
+      } else {
+        setUploadingLettre(true);
+      }
+
+      const response = await api.post('/upload', formDataUpload, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const fileUrl = `http://localhost:5001${response.data.url}`;
+
+      if (type === 'cv') {
+        setFormData((prev) => ({ ...prev, cvUrl: fileUrl }));
+        setCvFile(file);
+      } else {
+        setFormData((prev) => ({ ...prev, lettreUrl: fileUrl }));
+        setLettreFile(file);
+      }
+    } catch (error) {
+      console.error('Erreur upload:', error);
+      alert('Erreur lors de l\'upload du fichier');
+    } finally {
+      if (type === 'cv') {
+        setUploadingCv(false);
+      } else {
+        setUploadingLettre(false);
+      }
+    }
+  };
+
+  const handleCvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileUpload(file, 'cv');
+    }
+  };
+
+  const handleLettreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileUpload(file, 'lettre');
+    }
+  };
+
+  const removeFile = (type: 'cv' | 'lettre') => {
+    if (type === 'cv') {
+      setFormData((prev) => ({ ...prev, cvUrl: '' }));
+      setCvFile(null);
+    } else {
+      setFormData((prev) => ({ ...prev, lettreUrl: '' }));
+      setLettreFile(null);
+    }
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,6 +176,17 @@ export default function CandidatureForm() {
         setIsLoading(false);
       }
   };
+
+  if (loadingData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

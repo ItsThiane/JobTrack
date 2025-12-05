@@ -11,6 +11,7 @@ import CompanyManager from '../components/CompanyManager';
 import CandidatureHistory from '../components/CandidatureHistory';
 import { toast } from 'react-toastify';
 import { exportCandidaturesCSV, exportCandidaturesPDF } from '../utils/exportUtils';
+import { Download } from 'lucide-react';
 
 export default function Dashboard() {
   const navigate = useNavigate();
