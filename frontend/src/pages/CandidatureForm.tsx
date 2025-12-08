@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { candidaturesAPI, Candidature, Tag } from '../lib/api';
 import { showToast } from '../utils/toast';
-import { ArrowLeft, Save, Upload, FileTex, X } from 'lucide-react';
+import { ArrowLeft, Save } from 'lucide-react';
 import TagsInput from '../components/TagsInput';
 import { tagsStorage } from '../utils/tagsStorage';
 
@@ -20,15 +20,12 @@ export default function CandidatureForm() {
     statut: 'envoye',
     dateEnvoi: new Date().toISOString().split('T')[0],
     notes: '',
-    cvUrl: '',
-    lettreUrl: '',
+    cvUrl: '', // Conservé dans formData, mais non géré par l'UI
+    lettreUrl: '', // Conservé dans formData, mais non géré par l'UI
   });
 
-  const [cvFile, setCvFile] = useState<File | null>(null);
-  const [lettreFile, setLettreFile] = useState<File | null>(null);
-  const [uploadingCv, setUploadingCv] = useState(false);
-  const [uploadingLettre, setUploadingLettre] = useState(false);
-  const [loadingData, setLoadingData] = useState(false);
+  // Suppression des états cvFile, lettreFile, uploadingCv, uploadingLettre et leurs setters
+  const [loadingData, setLoadingData] = useState(false); // Ajout du setter pour usage futur, mais non utilisé ici.
 
 
   const [tags, setTags] = useState<Tag[]>([]);
@@ -43,6 +40,8 @@ export default function CandidatureForm() {
 
   const loadCandidature = async () => {
     try {
+      // Nous utilisons setLoadingData pour montrer l'intention d'afficher un loader
+      setLoadingData(true); 
       const data: Candidature = await candidaturesAPI.getOne(parseInt(id!));
       setFormData({
         entrepriseNom: data.entreprise.nom,
@@ -61,6 +60,8 @@ export default function CandidatureForm() {
       }
     } catch (error) {
       showToast.error('Erreur lors du chargement de la candidature');
+    } finally {
+      setLoadingData(false);
     }
   };
 
@@ -73,68 +74,10 @@ export default function CandidatureForm() {
     });
   };
 
-  const handleFileUpload = async (file: File, type: 'cv' | 'lettre') => {
-    const formDataUpload = new FormData();
-    formDataUpload.append('file', file);
-    formDataUpload.append('type', type);
-
-    try {
-      if (type === 'cv') {
-        setUploadingCv(true);
-      } else {
-        setUploadingLettre(true);
-      }
-
-      const response = await api.post('/upload', formDataUpload, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      const fileUrl = `http://localhost:5001${response.data.url}`;
-
-      if (type === 'cv') {
-        setFormData((prev) => ({ ...prev, cvUrl: fileUrl }));
-        setCvFile(file);
-      } else {
-        setFormData((prev) => ({ ...prev, lettreUrl: fileUrl }));
-        setLettreFile(file);
-      }
-    } catch (error) {
-      console.error('Erreur upload:', error);
-      alert('Erreur lors de l\'upload du fichier');
-    } finally {
-      if (type === 'cv') {
-        setUploadingCv(false);
-      } else {
-        setUploadingLettre(false);
-      }
-    }
-  };
-
-  const handleCvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFileUpload(file, 'cv');
-    }
-  };
-
-  const handleLettreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFileUpload(file, 'lettre');
-    }
-  };
-
-  const removeFile = (type: 'cv' | 'lettre') => {
-    if (type === 'cv') {
-      setFormData((prev) => ({ ...prev, cvUrl: '' }));
-      setCvFile(null);
-    } else {
-      setFormData((prev) => ({ ...prev, lettreUrl: '' }));
-      setLettreFile(null);
-    }
-  };
+  // Suppression complète du bloc handleFileUpload (anciennement lignes 76 à 116)
+  
+  // Suppression des fonctions handleCvChange, handleLettreChange, removeFile
+ 
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -144,6 +87,9 @@ export default function CandidatureForm() {
 
     try {
       if (isEdit) {
+        // Lors de la mise à jour, nous n'envoyons que les champs modifiables (poste, type, statut, notes)
+        // Les URLs de fichiers (cvUrl, lettreUrl) et l'entreprise ne sont pas inclus ici,
+        // car la fonction update de l'API ne les attend pas.
         await candidaturesAPI.update(parseInt(id!), {
           poste: formData.poste,
           type: formData.type,
@@ -153,6 +99,7 @@ export default function CandidatureForm() {
         tagsStorage.saveTagsForCandidature(parseInt(id!), tags);
         showToast.success('Candidature mise à jour avec succès');
       } else {
+        // Lors de la création, nous envoyons tous les champs de formData (y compris les URLs de fichiers vides)
         const response = await candidaturesAPI.create(formData);
         if (response.id) {
           tagsStorage.saveTagsForCandidature(response.id, tags);
