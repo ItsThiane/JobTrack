@@ -25,6 +25,10 @@ app.use(express.json());
 //Servir les fichiers statiques (uploads)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+//Route de base
+app.get('/', (req, res) => {
+    res.json({ message: 'API fonctionne !' });
+});
 
 //Route de test
 app.get('/api/health', (req, res) => {
