@@ -4,10 +4,10 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { PrismaClient } from '@prisma/client';
-import authRoutes from './routes/auth';
-import candidatureRoutes from './routes/candidatures';
-import uploadRoutes from './routes/upload';
-import exportRoutes from './routes/export';
+import authRoutes from './routes/auth.js';
+import candidatureRoutes from './routes/candidatures.js';
+import uploadRoutes from './routes/upload.js';
+import exportRoutes from './routes/export.js';
 
 
 dotenv.config();
