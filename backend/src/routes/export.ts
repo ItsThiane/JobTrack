@@ -52,7 +52,7 @@ router.get('/export/candidatures/csv', authMiddleware, async (req: Request, res:
     try {
         const candidatures = await prisma.candidature.findMany({
             where: { 
-                userId: req.user.id, 
+                userId: req.user!.id, 
             },
             include: { 
                 entreprise: true, 

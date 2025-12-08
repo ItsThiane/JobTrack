@@ -8,7 +8,7 @@ import authRoutes from './routes/auth';
 import candidatureRoutes from './routes/candidatures';
 import uploadRoutes from './routes/upload';
 import exportRoutes from './routes/export';
-import dotenv from 'dotenv';
+
 
 dotenv.config();
 
