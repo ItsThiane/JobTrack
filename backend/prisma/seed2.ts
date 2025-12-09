@@ -15,7 +15,7 @@ async function main() {
 
   // 1. Suppression des donnees existantes (pour un environnement propre)
   await prisma.interaction.deleteMany();
-  await prisma.tag.deleteMany();
+  //await prisma.tag.deleteMany();
   await prisma.candidature.deleteMany();
   await prisma.entreprise.deleteMany();
   await prisma.user.deleteMany();
@@ -79,6 +79,7 @@ async function main() {
   
 
   // 4. Création des Tags (Réutilisables)
+  /*
   console.log('Création des tags...');
   const tagsData = await Promise.all([
     prisma.tag.create({ data: { name: 'Urgent' } }),
@@ -89,7 +90,7 @@ async function main() {
   ]);
   const tagUrgent = tagsData[0];
   const tagFrontend = tagsData[1];
-  const tagData = tagsData[4];
+  const tagData = tagsData[4]; */
 
 
   // 5. Création des candidatures
@@ -101,10 +102,10 @@ async function main() {
       userId: user1.id,
       entrepriseId: transtest.id,
       poste: 'Trans Test',
-      type: TypeContrat.stage,
-      statut: StatutCandidature.envoye,
+      //type: TypeContrat.stage,
+      //statut: StatutCandidature.envoye,
       dateEnvoi: daysAgo(2), 
-      tags: { connect: [{ id: tagUrgent.id }] }
+      //tags: { connect: [{ id: tagUrgent.id }] }
     },
   });
   
@@ -113,10 +114,10 @@ async function main() {
       userId: user1.id,
       entrepriseId: kleysia.id,
       poste: 'Data scientist',
-      type: TypeContrat.alternance,
-      statut: StatutCandidature.envoye,
+      //type: TypeContrat.alternance,
+      //statut: StatutCandidature.envoye,
       dateEnvoi: daysAgo(4), 
-      tags: { connect: [{ id: tagData.id }] }
+      //tags: { connect: [{ id: tagData.id }] }
     },
   });
 
@@ -126,8 +127,8 @@ async function main() {
       userId: user1.id,
       entrepriseId: microsoft.id,
       poste: 'Data Engineer',
-      type: TypeContrat.cdi,
-      statut: StatutCandidature.entretien, // Statut Entretien
+      //type: TypeContrat.cdi,
+      //statut: StatutCandidature.entretien, // Statut Entretien
       dateEnvoi: daysAgo(10), 
       notes: 'Entretien technique réussi, attente du RH.',
     },
@@ -138,10 +139,10 @@ async function main() {
       userId: user1.id,
       entrepriseId: google.id,
       poste: 'Développeur Full Stack',
-      type: TypeContrat.stage,
-      statut: StatutCandidature.envoye,
+      //type: TypeContrat.stage,
+      //statut: StatutCandidature.envoye,
       dateEnvoi: daysAgo(18), 
-      tags: { connect: [{ id: tagFrontend.id }, { id: tagUrgent.id }] }
+      //tags: { connect: [{ id: tagFrontend.id }, { id: tagUrgent.id }] }
     },
   });
 
@@ -150,8 +151,8 @@ async function main() {
       userId: user1.id,
       entrepriseId: accenture.id,
       poste: 'Consultant IT',
-      type: TypeContrat.alternance,
-      statut: StatutCandidature.refus, // Statut Refus
+      //type: TypeContrat.alternance,
+      //statut: StatutCandidature.refus, // Statut Refus
       dateEnvoi: daysAgo(30), 
       notes: 'Refus. À archiver.',
     },
@@ -162,8 +163,8 @@ async function main() {
       userId: user1.id,
       entrepriseId: accenture.id,
       poste: 'Chef de projet',
-      type: TypeContrat.cdd,
-      statut: StatutCandidature.accepte, // Statut Accepté
+      //type: TypeContrat.cdd,
+      //statut: StatutCandidature.accepte, // Statut Accepté
       dateEnvoi: daysAgo(50), 
       notes: 'Offre signée !',
     },
