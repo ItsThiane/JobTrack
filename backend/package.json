@@ -4,13 +4,14 @@
   "description": "",
   "main": "src/server.ts",
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed2.ts" 
   },
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "seed": "prisma db seed"
+    "prisma:seed": "prisma db seed",
+    "seed": "npm run prisma:seed && echo 'Database has been seeded!'"
   },
   "keywords": [],
   "author": "",

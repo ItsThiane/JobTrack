@@ -1,9 +1,14 @@
-import { Router } from "express";
-import multer from "multer";
-import { authMiddleware } from "../middleware/auth";
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const multer_1 = __importDefault(require("multer"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
 // Configuration de multer pour le stockage des fichiers
-const storage = multer.diskStorage({
+const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
         const type = req.body.type || 'cv'; // 'cv' ou 'lettre'
         const folder = type === 'cv' ? 'uploads/cv' : 'uploads/lettres';
@@ -29,7 +34,7 @@ const fileFilter = (req, file, cb) => {
         cb(new Error('Type de fichier non autorisé. Seuls les PDF et Word sont acceptés.'));
     }
 };
-const upload = multer({
+const upload = (0, multer_1.default)({
     storage,
     fileFilter,
     limits: {
@@ -37,7 +42,7 @@ const upload = multer({
     } // Limite de 5MB)
 });
 // Route protégée pour uploader un fichier (CV ou lettre de motivation)
-router.post('/upload', authMiddleware, upload.single('file'), (req, res) => {
+router.post('/upload', auth_1.authMiddleware, upload.single('file'), (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'Aucun fichier fourni' });
@@ -56,4 +61,4 @@ router.post('/upload', authMiddleware, upload.single('file'), (req, res) => {
         return res.status(500).json({ error: 'Erreur du serveur lors de l\'upload du fichier' });
     }
 });
-export default router;
+exports.default = router;

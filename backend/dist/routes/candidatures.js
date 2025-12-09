@@ -1,10 +1,12 @@
-import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { authMiddleware } from "../middleware/auth";
-const router = Router();
-const prisma = new PrismaClient();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const client_1 = require("@prisma/client");
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+const prisma = new client_1.PrismaClient();
 // Toutes les routes nécessitent une authentification
-router.use(authMiddleware);
+router.use(auth_1.authMiddleware);
 //Créer une candidature
 router.post("/", async (req, res) => {
     try {
@@ -278,4 +280,4 @@ router.get("/stats/summary", async (req, res) => {
         return res.status(500).json({ error: "Erreur du serveur" });
     }
 });
-export default router;
+exports.default = router;

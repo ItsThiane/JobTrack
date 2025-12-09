@@ -1,8 +1,10 @@
-import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { authMiddleware } from "../middleware/auth";
-const router = Router();
-const prisma = new PrismaClient();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const client_1 = require("@prisma/client");
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+const prisma = new client_1.PrismaClient();
 //Route pour convertir les donnees en format CSV et les exporter
 function convertToCSV(data) {
     if (data.length === 0) {
@@ -39,7 +41,7 @@ function convertToCSV(data) {
     return csvContent;
 }
 // Route pour exporter toutes les candidatures en CSV
-router.get('/export/candidatures/csv', authMiddleware, async (req, res) => {
+router.get('/export/candidatures/csv', auth_1.authMiddleware, async (req, res) => {
     try {
         const candidatures = await prisma.candidature.findMany({
             where: {
@@ -64,7 +66,7 @@ router.get('/export/candidatures/csv', authMiddleware, async (req, res) => {
     }
 });
 // Route pour exporter avec filtres
-router.get('/candidatures/csv/filtered', authMiddleware, async (req, res) => {
+router.get('/candidatures/csv/filtered', auth_1.authMiddleware, async (req, res) => {
     try {
         const { statut, type, dateDebut, dateFin } = req.query;
         const candidatures = await prisma.candidature.findMany({
@@ -100,4 +102,4 @@ router.get('/candidatures/csv/filtered', authMiddleware, async (req, res) => {
         res.status(500).json({ error: 'Erreur lors de l\'export' });
     }
 });
-export default router;
+exports.default = router;

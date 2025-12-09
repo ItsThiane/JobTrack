@@ -6,13 +6,13 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding database...');
 
-  // Clear existing data
+  // Suppression des donnees existantes
   await prisma.interaction.deleteMany();
   await prisma.candidature.deleteMany();
   await prisma.entreprise.deleteMany();
   await prisma.user.deleteMany();
 
-  // Create users
+  // Creation users
   const hashedPassword = await bcrypt.hash('password123', 10);
 
   const user1 = await prisma.user.create({
@@ -47,7 +47,7 @@ async function main() {
 
   console.log('Created 2 users');
 
-  // Create companies
+  // Creation companies
   const companies = await Promise.all([
     prisma.entreprise.create({
       data: {
@@ -93,7 +93,7 @@ async function main() {
 
   console.log('Created 5 companies');
 
-  // Create candidatures
+  // Creation candidatures
   const now = new Date();
   const candidatures = await Promise.all([
     prisma.candidature.create({
@@ -156,7 +156,7 @@ async function main() {
 
   console.log('Created 5 candidatures');
 
-  // Create interactions
+  // Creation  interactions
   await Promise.all([
     prisma.interaction.create({
       data: {
