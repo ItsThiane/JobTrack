@@ -78,7 +78,7 @@ export default function CandidatureDetail() {
     }
   };
 
-  // Réorganisé pour plus d'impact visuel et de lisibilité
+  
   const getStatutStyle = (statut: string) => {
     switch (statut) {
       case 'envoye':
