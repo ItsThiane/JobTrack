@@ -20,8 +20,8 @@ export default function CandidatureForm() {
     statut: 'envoye',
     dateEnvoi: new Date().toISOString().split('T')[0],
     notes: '',
-    cvUrl: '', // Conservé dans formData, mais non géré par l'UI
-    lettreUrl: '', // Conservé dans formData, mais non géré par l'UI
+    cvUrl: '', 
+    lettreUrl: '',
   });
 
   // Suppression des états cvFile, lettreFile, uploadingCv, uploadingLettre et leurs setters
@@ -74,10 +74,10 @@ export default function CandidatureForm() {
     });
   };
 
-  // Suppression complète du bloc handleFileUpload (anciennement lignes 76 à 116)
-  
-  // Suppression des fonctions handleCvChange, handleLettreChange, removeFile
  
+
+ 
+
 
 
   const handleSubmit = async (e: React.FormEvent) => {

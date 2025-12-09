@@ -8,7 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CandidatureForm from './pages/CandidatureForm';
-import CandidatureDetail from './pages/CandidatureDetail1';
+import CandidatureDetail from './pages/CandidatureDetail';
 import Profile from './pages/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
