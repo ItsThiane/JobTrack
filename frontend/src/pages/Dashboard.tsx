@@ -110,31 +110,31 @@ export default function Dashboard() {
           <div className="flex gap-2">
             <button
               onClick={() => setShowCompanyManager(true)}
-              className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 font-semibold"
+              className="flex items-center gap-1 bg-purple-600 text-white px-2 py-2 rounded-lg hover:bg-purple-700 font-semibold"
             >
-              <Building2 size={20} />
+              <Building2 size={18} />
               Entreprises
             </button>
             <button
               onClick={() => setShowHistory(true)}
-              className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-semibold"
+              className="flex items-center gap-1 bg-indigo-600 text-white px-2 py-2 rounded-lg hover:bg-indigo-700 font-semibold"
             >
-              <History size={20} />
+              <History size={18} />
               Historique
             </button>
             <button
               onClick={() => exportCandidaturesCSV(candidatures)}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-semibold"
+              className="bg-green-600 text-white px-2 py-2 rounded-lg hover:bg-green-700 font-semibold"
             >
               Exporter CSV
             </button>
             <button
               onClick={() => exportCandidaturesPDF(candidatures)}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 font-semibold"
+              className="bg-red-600 text-white px-2 py-2 rounded-lg hover:bg-red-700 font-semibold"
             >
               Exporter PDF
             </button>
-            <label className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold cursor-pointer">
+            <label className="bg-blue-600 text-white px-2 py-2 rounded-lg hover:bg-blue-700 font-semibold cursor-pointer">
               Import CSV
               <input
                 type="file"
@@ -145,9 +145,9 @@ export default function Dashboard() {
             </label>
             <button
               onClick={() => navigate('/candidatures/new')}
-              className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition font-semibold"
+              className="flex items-center gap-1 bg-indigo-600 text-white px-2 py-2 rounded-lg hover:bg-indigo-700 transition font-semibold"
             >
-              <Plus size={20} />
+              <Plus size={18} />
               Nouvelle candidature
             </button>
           </div>
